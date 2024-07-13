@@ -3,3 +3,4 @@ qrcode
 pandas
 opencv-python
 pyzbar
+gunicorn
