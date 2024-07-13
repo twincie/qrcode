@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS for centering the card */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card {
+            width: 100%;
+            max-width: 900px; /* Adjust as needed */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Admin Dashboard</h3>
+                <form method="POST" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="course_code">Course Code</label>
+                        <input type="text" class="form-control" id="course_code" name="course_code" required>
+                        <div class="invalid-feedback">
+                            Please provide a course code.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                        <div class="invalid-feedback">
+                            Please provide a date.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Generate QR Code</button>
+                </form>
+
+                {% if qr_path %}
+                <h2 class="mt-4 text-center">QR Code</h2>
+                <img src="{{ url_for('static', filename=qr_path[7:]) }}" alt="QR Code" class="img-fluid mt-3 mb-3 mx-auto d-block"><br>
+
+                <div class="d-flex justify-content-between">
+                    <form action="{{ url_for('download_qr_code') }}" method="post">
+                        <input type="hidden" name="qr_path" value="{{ qr_path }}">
+                        <input type="submit" class="btn btn-success btn-block" value="Download QR Code">
+                    </form>
+
+                    <form action="{{ url_for('delete_qr_code') }}" method="post">
+                        <input type="hidden" name="qr_path" value="{{ qr_path }}">
+                        <input type="submit" class="btn btn-danger btn-block" value="Delete QR Code">
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bootstrap validation example
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
