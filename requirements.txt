@@ -1,6 +1,6 @@
 flask
 qrcode
 pandas
-opencv-python
+opencv-python-headless
 pyzbar
 gunicorn
