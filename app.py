@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, request, redirect, url_for, session, send_file
-from flask_mysqldb import MySQL
+from flask_sqlalchemy import SQLAlchemy
 import qrcode
 import os
 import pandas as pd
@@ -10,16 +10,11 @@ import pyzbar.pyzbar as pyzbar
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
+# Configure PostgreSQL database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://qrcode_pdtj_user:OTh3a50lp9fOz09uq3spLBXD0k42IFnY@dpg-cqa0gi2ju9rs73bc1s30-a/qrcode_pdtj'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Configure db
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'qrcode'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-
-
-mysql = MySQL(app)
+db = SQLAlchemy(app)
 
 # Hardcoded admin credentials
 ADMIN_USERNAME = 'admin'
@@ -27,6 +22,19 @@ ADMIN_PASSWORD = 'password'
 
 # Ensure the directories exist
 os.makedirs('static/qr_codes', exist_ok=True)
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    firstname = db.Column(db.String(50))
+    lastname = db.Column(db.String(50))
+    email = db.Column(db.String(100), unique=True)
+    matric = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(100))
+
+# Create the tables
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def home():
@@ -52,31 +60,26 @@ def user_register():
         email = request.form["email"]
         password = request.form["password"]
 
-        cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO users(firstname, lastname, email, matric, password) VALUES(%s, %s, %s, %s, %s)", (firstname, lastname, email, matric, password))
-        mysql.connection.commit()
-        cur.close()
+        new_user = User(firstname=firstname, lastname=lastname, email=email, matric=matric, password=password)
+        db.session.add(new_user)
+        db.session.commit()
 
         flash('Registration successful. Please login.', 'success')
         return redirect(url_for('user_login'))
     return render_template('register.html')
 
-    
 @app.route('/login', methods=['GET','POST'])
 def user_login():
     if request.method == 'POST':
         matric = request.form['matric']
         password = request.form['password']
 
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE matric = %s AND password = %s", (matric, password))
-        user = cur.fetchone()
-        cur.close()
+        user = User.query.filter_by(matric=matric, password=password).first()
 
         if user:
-            session['user_id'] = user['id']
-            session['username'] = user['firstname'] + " " + user['lastname']
-            session['matric'] = user['matric'] # Adjust as per your database structure
+            session['user_id'] = user.id
+            session['username'] = f"{user.firstname} {user.lastname}"
+            session['matric'] = user.matric
             flash('Login successful.', 'success')
             return redirect(url_for('user'))
         else:
@@ -84,7 +87,6 @@ def user_login():
             return redirect(url_for('user_login'))
 
     return render_template('login.html')
-
 
 @app.route('/admin_dashboard', methods=['GET', 'POST'])
 def admin_dashboard():

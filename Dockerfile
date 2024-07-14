@@ -9,9 +9,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Install libgl1-mesa-glx to resolve libGL.so.1 dependency
-RUN apt-get update \
-    && apt-get install -y libgl1-mesa-glx \
-    && apt-get clean
+RUN apt-get update && \
+    apt-get install -y build-essential libzbar-dev && \
+    pip install zbar
 
 # Set working directory for the application
 WORKDIR /app
