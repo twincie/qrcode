@@ -1,4 +1,0 @@
-<!-- {% if qr_path %}
-                    <h4 class="mt-5">Generated QR Code:</h4>
-                    <img src="{{ url_for('static', filename=qr_path.split('static/')[-1]) }}" alt="QR Code">
-                {% endif %} -->

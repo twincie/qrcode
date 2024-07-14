@@ -18,6 +18,11 @@
             max-width: 900px; /* Adjust as needed */
             padding: 20px;
         }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
     </style>
 </head>
 <body>
@@ -25,6 +30,12 @@
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title text-center">Admin Dashboard</h3>
+                <div class="text-right mb-3">
+                    <a href="{{ url_for('attendance_files') }}" class="btn btn-info">Check Attendance Files</a>
+                </div>
+                <div class="logout-btn">
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+                </div>
                 <form method="POST" class="needs-validation" novalidate>
                     <div class="form-group">
                         <label for="course_code">Course Code</label>

@@ -6,7 +6,6 @@
     <title>User Attendance</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Custom CSS for centering the card */
         .container {
             display: flex;
             justify-content: center;
@@ -15,8 +14,13 @@
         }
         .card {
             width: 100%;
-            max-width: 900px; /* Adjust as needed */
+            max-width: 900px;
             padding: 20px;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
     </style>
 </head>
@@ -25,6 +29,9 @@
         <div class="card mt-5">
             <div class="card-body">
                 <h3 class="card-title text-center">User Attendance</h3>
+                <div class="logout-btn">
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+                </div>
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -34,21 +41,9 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
+                <h1>Welcome, {{ username }}!</h1>
+                <p class="lead">Matric Number: {{ matric }}</p>
                 <form method="POST" class="needs-validation" novalidate>
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                        <div class="invalid-feedback">
-                            Please enter your name.
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="registration_no">Registration No</label>
-                        <input type="text" class="form-control" id="registration_no" name="registration_no" required>
-                        <div class="invalid-feedback">
-                            Please enter your registration number.
-                        </div>
-                    </div>
                     <div class="form-group">
                         <label for="course_code">Course Code</label>
                         <input type="text" class="form-control" id="course_code" name="course_code" required>
@@ -63,7 +58,6 @@
     </div>
 
     <script>
-        // Bootstrap validation example
         (function() {
             'use strict';
             window.addEventListener('load', function() {
